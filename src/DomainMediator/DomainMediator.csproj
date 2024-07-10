@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.0.0-beta.0.1</Version>
+        <Authors>Fillippe Prata</Authors>
+        <PackageProjectUrl>https://github.com/fillippeprata/DomainMediator</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/fillippeprata/DomainMediator</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Description>.NET project for domain mediator pattern.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="13.0.1"/>
+        <PackageReference Include="FluentAssertions" Version="6.12.0"/>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0"/>
+        <PackageReference Include="MediatR" Version="12.3.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="DomainMediator.WebApi"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="DataBase\IDbSetStorage.cs"/>
+    </ItemGroup>
+</Project>
