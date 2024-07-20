@@ -10,7 +10,7 @@ public record DeleteUserCommand : IDomainCommand
     public void SetUserId(Guid userId) => UserId = userId;
 }
 
-public class DeleteUserCommandHandler(UserFactory _factory) : DomainCommandHandler<DeleteUserCommand>
+internal class DeleteUserCommandHandler(UserFactory _factory) : DomainCommandHandler<DeleteUserCommand>
 {
     public override async Task Handle(DeleteUserCommand command)
     {

@@ -12,7 +12,7 @@ public record UpdateUserCommand : _UserCommandBase, IDomainCommand
 
 public class UpdateUserValidator : UserCommandBaseValidator<UpdateUserCommand>;
 
-public class UpdateUserCommandHandler(UserFactory _factory) : DomainCommandHandler<UpdateUserCommand>
+internal class UpdateUserCommandHandler(UserFactory _factory) : DomainCommandHandler<UpdateUserCommand>
 {
     public override async Task Handle(UpdateUserCommand command)
     {

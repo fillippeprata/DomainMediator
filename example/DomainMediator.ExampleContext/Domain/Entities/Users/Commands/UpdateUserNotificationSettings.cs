@@ -24,7 +24,7 @@ public class UpdateUserNotificationSettingsValidator : AbstractValidator<UpdateU
     }
 }
 
-public class UpdateUserNotificationSettingsCommandHandler(UserFactory _factory)
+internal class UpdateUserNotificationSettingsCommandHandler(UserFactory _factory)
     : DomainCommandHandler<UpdateUserNotificationSettingsCommand>
 {
     public override async Task Handle(UpdateUserNotificationSettingsCommand command)

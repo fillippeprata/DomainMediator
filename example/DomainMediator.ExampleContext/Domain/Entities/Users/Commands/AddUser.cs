@@ -18,7 +18,7 @@ public class AddUserValidator : UserCommandBaseValidator<AddUserCommand>
     }
 }
 
-public class AddUserCommandHandler(UserFactory _factory) : DomainCommandHandler<AddUserCommand, UserResponse>
+internal class AddUserCommandHandler(UserFactory _factory) : DomainCommandHandler<AddUserCommand, UserResponse>
 {
     public override async Task<UserResponse?> Handle(AddUserCommand command)
     {

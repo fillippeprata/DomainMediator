@@ -24,7 +24,7 @@ public interface IUser : IUserProperties
     Task DeleteAndSaveAsync(DeleteUserCommand command);
 }
 
-public class UserFactory(Mediator _mediator, IMapper _mapper, IUserStorage _storage)
+internal class UserFactory(Mediator _mediator, IMapper _mapper, IUserStorage _storage)
 {
     public async Task<UserResponse?> AddUserAndSaveAsync(AddUserCommand command)
     {
