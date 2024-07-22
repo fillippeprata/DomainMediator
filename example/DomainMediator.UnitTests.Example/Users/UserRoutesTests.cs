@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using DomainMediator.DataBase;
 using DomainMediator.ExampleContext.Domain.Entities.Users;
 using DomainMediator.ExampleContext.Domain.Entities.Users.Commands;
+using DomainMediator.ExampleContext.Domain.Entities.Users.Queries;
 using DomainMediator.Notifications;
 using DomainMediator.Tests;
 using DomainMediator.WebApi.Example.Features.Auth;
@@ -16,7 +18,7 @@ public class UserRoutesTests(AppTestingProvider app) : IClassFixture<AppTestingP
     private readonly HttpClient _client = app.CreateClient().Init();
 
     [Fact]
-    public async Task Add_Authenticate_Update_Find_UpdateNotifications_And_DeleteUser()
+    public async Task Add_Authenticate_Update_Find_List_UpdateNotifications_And_DeleteUser()
     {
         #region Validate Add User Command
 
@@ -135,6 +137,23 @@ public class UserRoutesTests(AppTestingProvider app) : IClassFixture<AppTestingP
         Assert.NotNull(findUserData);
         Assert.Equal("User Test 2", findUserData.CallAs);
         Assert.Equal("Admin2", findUserData.Roles.FirstOrDefault());
+
+        #endregion
+
+        #region List users
+
+        var queryCallAs = new ListUsersQuery
+        {
+            CallAs = "User Test 2"
+        };
+
+        // Act
+        var listUsersResponse = await _client.Send(_users, new() {QueryParameters = queryCallAs});
+        var listUsersData = listUsersResponse?.ResponseData<PageResultResponse<UserResponse>>();
+
+        Assert.NotNull(listUsersData);
+        Assert.NotEmpty(listUsersData.Data);
+        Assert.Equal(1, listUsersData.TotalItems);
 
         #endregion
 

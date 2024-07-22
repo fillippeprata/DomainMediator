@@ -1,6 +1,8 @@
-﻿namespace DomainMediator.DataBase;
+﻿using DomainMediator.Queries;
 
-public record PageResultResponse<T>
+namespace DomainMediator.DataBase;
+
+public record PageResultResponse<T>: IQueryResponse
 {
     public PageResultResponse(PageResultResponse<T> result)
     {

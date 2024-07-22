@@ -15,6 +15,7 @@ internal static class UsersRoutes
     internal static void AddUsersRoutes(this RouteGroupBuilder app)
     {
         app.AddUser();
+        app.ListUsers();
         app.FindUser();
         app.UpdateUser();
         app.DeleteUser();
@@ -31,6 +32,20 @@ internal static class UsersRoutes
             .WithOpenApi(x =>
             {
                 x.Summary = "Add a new user.";
+                return x;
+            });
+    }
+
+    private static void ListUsers(this RouteGroupBuilder app)
+    {
+        app.MapGet(Route,
+                [AllowAnonymous] async ([AsParameters] ListUsersQuery command, [FromServices] DomainApi _domainApi) => await _domainApi.Get(command))
+            .Produces<ApiResponse<UserResponse>>(StatusCodes.Status201Created)
+            .Produces<ApiResponse>(StatusCodes.Status400BadRequest)
+            .Produces<ApiResponse>(StatusCodes.Status500InternalServerError)
+            .WithOpenApi(x =>
+            {
+                x.Summary = "List Users.";
                 return x;
             });
     }

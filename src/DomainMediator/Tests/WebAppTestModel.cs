@@ -8,4 +8,5 @@ public record WebAppTestModel
     public TestHttpMethod HttpMethod { get; init; } = TestHttpMethod.Get;
     public bool EnsureSuccess { get; init; } = true;
     public object? Content { get; init; }
+    public object? QueryParameters { get; init; }
 }

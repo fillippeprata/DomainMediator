@@ -33,15 +33,7 @@ internal class UserQuery(IMapper _mapper, Mediator _mediator, ExampleContextDbCo
                 x.CallAs.Contains(query.CallAs, StringComparison.OrdinalIgnoreCase)
             );
 
-        var users = _context.Users.Where(predicate.Compile()).Skip(query.PageLimit * (query.PageNumber - 1))
-            .Take(query.PageLimit);
-
-        return Task.FromResult(new PageResultResponse<UserResponse>
-        {
-            Data = _mapper.Map<IEnumerable<UserResponse>>(users),
-            TotalItems = users.Count(predicate.Compile()),
-            PageLimit = query.PageLimit,
-            PageNumber = query.PageNumber
-        });
+        var users = _context.Users.RunPagedQuery<UserEntity, UserResponse>(_mapper, predicate, query);
+        return Task.FromResult(users);
     }
 }

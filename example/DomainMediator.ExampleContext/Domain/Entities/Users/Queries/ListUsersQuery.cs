@@ -7,7 +7,7 @@ using FluentValidation;
 namespace DomainMediator.ExampleContext.Domain.Entities.Users.Queries;
 
 [ExcludeFromCodeCoverage]
-public record ListUsersQuery : PageQueryRequest, IDomainQuery<ListUsersResponse>
+public record ListUsersQuery : PageQueryRequest, IDomainQuery<PageResultResponse<UserResponse>>
 {
     public string? UserName { get; init; }
     public string? CallAs { get; init; }
@@ -22,18 +22,11 @@ public class ListUsersValidator : AbstractValidator<ListUsersQuery>
     }
 }
 
-[ExcludeFromCodeCoverage]
-public record ListUsersResponse : PageResultResponse<UserResponse>, IQueryResponse
+public class ListUsersQueryHandler(IUserQuery _query) : DomainQueryHandler<ListUsersQuery, PageResultResponse<UserResponse>>
 {
-    public ListUsersResponse(){}
-    public ListUsersResponse(PageResultResponse<UserResponse> result) : base(result){}
-}
-
-public class ListUsersQueryHandler(IUserQuery _query) : DomainQueryHandler<ListUsersQuery, ListUsersResponse>
-{
-    public override async Task<ListUsersResponse?> Handle(ListUsersQuery query)
+    public override async Task<PageResultResponse<UserResponse>?> Handle(ListUsersQuery query)
     {
         var users = await _query.ListUsers(query);
-        return new ListUsersResponse(users);
+        return new PageResultResponse<UserResponse>(users);
     }
 }

@@ -8,19 +8,31 @@ namespace DomainMediator.WebApi.Jwt;
 public interface IJwtService
 {
     JwtResponse GenerateAccessToken(Guid userId, string userName, string[] userRoles, Claim[]? claims = null);
+    JwtResponse GenerateAccessToken(JwtRequest request);
 }
 
 internal class JwtServiceImp(IJwtConfiguration _jwtConfiguration) : IJwtService
 {
-    public JwtResponse GenerateAccessToken(Guid userId, string userName, string[] userRoles, Claim[]? claims = null)
+    public JwtResponse GenerateAccessToken(Guid userId, string userName, string[]? userRoles = null, Claim[]? claims = null)
+    {
+        return GenerateAccessToken(new()
+        {
+            userId = userId,
+            UserName = userName,
+            UserRoles =  userRoles,
+            Claims = claims,
+        });
+    }
+
+    public JwtResponse GenerateAccessToken(JwtRequest request)
     {
         var claimsList = new List<Claim>
         {
-            new(JwtDefaultClaimKeys.userId.ToString(), userId.ToString()),
-            new(ClaimTypes.Name, userName)
+            new(JwtDefaultClaimKeys.userId.ToString(), request.userId.ToString())
         };
-        claimsList.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
-        if(claims is not null) claimsList.AddRange(claims);
+        if(request.UserRoles is { Length: > 0 }) claimsList.AddRange(request.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+        if (!string.IsNullOrEmpty(request.UserName)) claimsList.Add(new(ClaimTypes.Name, request.UserName));
+        if(request.Claims is { Length: > 0 }) claimsList.AddRange(request.Claims);
 
         var expiresIn = DateTime.UtcNow.AddMinutes(_jwtConfiguration.ExpirationInMinutes);
         var key = Encoding.ASCII.GetBytes(_jwtConfiguration.Key!);
@@ -39,8 +51,8 @@ internal class JwtServiceImp(IJwtConfiguration _jwtConfiguration) : IJwtService
 
         return new JwtResponse
         {
-            UserName = userName,
-            UserId = userId,
+            UserName = request.UserName,
+            UserId = request.userId,
             AccessToken = stringToken,
             ExpirationDateTime = token.ValidTo,
             ExpiresInSeconds = Convert.ToInt64((token.ValidTo - DateTime.UtcNow).TotalSeconds)
