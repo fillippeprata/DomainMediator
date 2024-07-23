@@ -8,6 +8,10 @@ namespace DomainMediator.UnitTests.Example.Validators;
 [ExcludeFromCodeCoverage]
 public class ListUsersValidatorTests
 {
+    public ListUsersValidatorTests()
+    {
+        _ = new TestProvider();
+    }
     private readonly Fixture _fixture = new();
     private readonly ListUsersValidator validator = new();
 
