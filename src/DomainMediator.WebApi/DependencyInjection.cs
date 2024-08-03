@@ -14,6 +14,7 @@ namespace DomainMediator.WebApi;
 [ExcludeFromCodeCoverage]
 public static class DependencyInjection
 {
+    private static bool _useAuthentication = false;
     public static void ConfigureDomainWebApiProgram(this WebApplicationBuilder builder, string apiVersion,
         bool requireAuthenticatedUser = true)
     {
@@ -34,12 +35,15 @@ public static class DependencyInjection
 
         void ConfigureCors()
         {
-            var enabledUrls = configuration["CorsOrigins"]?.Split(";") ?? [];
-            services.AddCors(options =>
+            SetCorsUrls(configuration);
+            if (IsCorsEnabled)
             {
-                options.AddDefaultPolicy(
-                    policy => { policy.WithOrigins(enabledUrls).AllowAnyHeader().AllowAnyMethod(); });
-            });
+                services.AddCors(options =>
+                {
+                    options.AddDefaultPolicy(
+                        policy => { policy.WithOrigins(_enabledCorsUrls).AllowAnyHeader().AllowAnyMethod(); });
+                });
+            }
         }
 
         void ConfigureSwagger()
@@ -109,6 +113,8 @@ public static class DependencyInjection
                             .Build());
                 else
                     services.AddAuthorization();
+
+                _useAuthentication = true;
             }
             else
             {
@@ -131,8 +137,7 @@ public static class DependencyInjection
         services.RegisterAssemblyForAllPackages(Assembly.GetExecutingAssembly());
     }
 
-    public static WebApplication BuildDomainWebApiProgram(this WebApplicationBuilder builder,
-        bool addAuthorization = true)
+    public static WebApplication BuildDomainWebApiProgram(this WebApplicationBuilder builder)
     {
         var app = builder.Build();
 
@@ -144,9 +149,10 @@ public static class DependencyInjection
 
         app.UseHttpsRedirection();
 
-        app.UseCors();
+        if (IsCorsEnabled)
+            app.UseCors();
 
-        if (addAuthorization)
+        if (_useAuthentication)
         {
             app.UseAuthentication();
             app.UseAuthorization();
@@ -156,5 +162,12 @@ public static class DependencyInjection
         app.UseErrorMiddleware();
 
         return app;
+    }
+
+    private static string[] _enabledCorsUrls = [];
+    private static readonly bool IsCorsEnabled = _enabledCorsUrls.Length > 0;
+    private static void SetCorsUrls(IConfiguration configuration)
+    {
+        _enabledCorsUrls = configuration["CorsOrigins"]?.Split(";") ?? [];
     }
 }
