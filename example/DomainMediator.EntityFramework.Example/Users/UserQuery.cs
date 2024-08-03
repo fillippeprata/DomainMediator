@@ -21,19 +21,19 @@ internal class UserQuery(IMapper _mapper, Mediator _mediator, ExampleContextDbCo
 
     public Task<PageResultResponse<UserResponse>> ListUsers(ListUsersQuery query)
     {
-        Expression<Func<UserEntity, bool>> predicate = x =>
-            (
-                string.IsNullOrEmpty(query.UserName)
-                ||
-                x.UserName.Contains(query.UserName, StringComparison.OrdinalIgnoreCase)
-            )
-            && (
-                string.IsNullOrEmpty(query.CallAs)
-                ||
-                x.CallAs.Contains(query.CallAs, StringComparison.OrdinalIgnoreCase)
-            );
-
-        var users = _context.Users.RunPagedQuery<UserEntity, UserResponse>(_mapper, predicate, query);
+        var users = _context.Users
+            .Where(x =>
+                (
+                    string.IsNullOrEmpty(query.UserName)
+                    ||
+                    x.UserName.Contains(query.UserName, StringComparison.OrdinalIgnoreCase)
+                )
+                && (
+                    string.IsNullOrEmpty(query.CallAs)
+                    ||
+                    x.CallAs.Contains(query.CallAs, StringComparison.OrdinalIgnoreCase)
+                ))
+            .RunPagedQuery<UserEntity, UserResponse>(_mapper, query);
         return Task.FromResult(users);
     }
 }
